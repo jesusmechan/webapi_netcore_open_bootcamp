@@ -35,5 +35,6 @@
 
         //Para el cierre de la sesión
         public int C_ULTIMO_ID { get; set; }
+        public string C_TOKEN { get; set; } = string.Empty;
     }
 }

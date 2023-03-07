@@ -31,5 +31,18 @@ namespace Controladora
             }
         }
 
+        public DtoUsuario InicioSesion(DtoUsuario entidad)
+        {
+            try
+            {
+                return _dao.InicioSesion(entidad);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
     }
 }
