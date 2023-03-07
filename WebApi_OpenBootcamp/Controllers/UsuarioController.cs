@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Controladora;
 using DTO;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi_OpenBootcamp.Controllers
 {
-    [ApiController]
+    [EnableCors("CorsPolicy")]
     [Route("[controller]")]
+    [Authorize]
+    [ApiController]
     public class UsuarioController : ControllerBase
     {
         CtrUsuario ctr = null;
@@ -22,5 +25,13 @@ namespace WebApi_OpenBootcamp.Controllers
             _lista = ctr.Usuario_Listar();
             return _lista;
         }
+
+        
+        //public DtoUsuario InicioSesion(DtoUsuario entidad)
+        //{
+        //    DtoUsuario data = new DtoUsuario();
+        //    data = ctr.InicioSesion(entidad);
+        //    return data;
+        //}
     }
 }

@@ -21,51 +21,51 @@ namespace DAO
         //    return dr;
         //}
 
-        //public DtoUsuario InicioSesion(DtoUsuario entidad, SqlDataReader dr)
-        //{
-        //    SqlCommand cmd = null;
-        //    SqlDataReader dr;
-        //    DtoUsuario _entidad = null;
-        //    var resultado = new ClaseResultado<DtoUsuario>();
-        //    try
-        //    {
-        //        //conexion = DaoConexion.Conectar();
-        //        cmd = new SqlCommand("USP_T_USUARIO_VERIFICAR_ACCESO", conexion);
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        cmd.Parameters.AddWithValue("@P_USUARIO", entidad.C_DNI);
-        //        cmd.Parameters.AddWithValue("@P_PASSWORD", entidad.C_PASSWORD);
-        //        //cmd.Parameters.AddWithValue("@P_ID_TIENDA", entidad.C_ID_TIENDA);
-        //        cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
-        //        conexion.Open();
-        //        dr = cmd.ExecuteReader();
-        //        if (dr.Read())
-        //        {
-        //            _entidad = new DtoUsuario();
-        //            _entidad.C_ID_USUARIO = Convert.ToInt32(dr["C_ID_USUARIO"]);
-        //            _entidad.C_NOMBRECOMPLETO = dr["C_NOMBRECOMPLETO"].ToString();
-        //            _entidad.C_CELULAR = dr["C_CELULAR"].ToString();
-        //            _entidad.C_CORREO = dr["C_CORREO"].ToString();
-        //            DtoTipoUsuario t = new DtoTipoUsuario();
-        //            t.C_ID_TIPO_USUARIO = Convert.ToInt32(dr["C_ID_TIPO_USUARIO"]);
-        //            t.C_NOMBRE_TIPO_USUARIO = dr["C_NOMBRE_TIPO_USUARIO"].ToString();
-        //            _entidad.TipoUsuario = t;
-        //            _entidad.C_ESTADO = Convert.ToBoolean(dr["C_ESTADO"]);
-        //            _entidad.C_ESTADO_STRING = Convert.ToString(dr["C_ESTADO_STRING"]);
-        //            //_entidad.C_ULTIMO_ID = Convert.ToInt32(dr["C_ULTIMO_ID"]);
-        //            resultado.Entidad = _entidad;
-        //            resultado.HuboError = false;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //    finally
-        //    {
-        //        cmd.Connection.Close();
-        //    }
-        //    return _entidad;
-        //}
+        public DtoUsuario InicioSesion(DtoUsuario entidad)
+        {
+            SqlCommand cmd = null;
+            SqlDataReader dr;
+            DtoUsuario _entidad = null;
+            var resultado = new ClaseResultado<DtoUsuario>();
+            try
+            {
+                //conexion = DaoConexion.Conectar();
+                cmd = new SqlCommand("USP_T_USUARIO_VERIFICAR_ACCESO", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@P_USUARIO", entidad.C_DNI);
+                cmd.Parameters.AddWithValue("@P_PASSWORD", entidad.C_PASSWORD);
+                //cmd.Parameters.AddWithValue("@P_ID_TIENDA", entidad.C_ID_TIENDA);
+                cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
+                conexion.Open();
+                dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    _entidad = new DtoUsuario();
+                    _entidad.C_ID_USUARIO = Convert.ToInt32(dr["C_ID_USUARIO"]);
+                    _entidad.C_NOMBRECOMPLETO = dr["C_NOMBRECOMPLETO"].ToString();
+                    _entidad.C_CELULAR = dr["C_CELULAR"].ToString();
+                    _entidad.C_CORREO = dr["C_CORREO"].ToString();
+                    DtoTipoUsuario t = new DtoTipoUsuario();
+                    t.C_ID_TIPO_USUARIO = Convert.ToInt32(dr["C_ID_TIPO_USUARIO"]);
+                    t.C_NOMBRE_TIPO_USUARIO = dr["C_NOMBRE_TIPO_USUARIO"].ToString();
+                    //_entidad.TipoUsuario = t;
+                    //_entidad.C_ESTADO = Convert.ToBoolean(dr["C_ESTADO"]);
+                    //_entidad.C_ESTADO_STRING = Convert.ToString(dr["C_ESTADO_STRING"]);
+                    //_entidad.C_ULTIMO_ID = Convert.ToInt32(dr["C_ULTIMO_ID"]);
+                    resultado.Entidad = _entidad;
+                    resultado.HuboError = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                cmd.Connection.Close();
+            }
+            return _entidad;
+        }
         //public int Usuario_Cerrar_Sesion(int ultimo_id)
         //{
         //    int success = 0;
