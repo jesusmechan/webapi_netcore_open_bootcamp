@@ -40,6 +40,7 @@ namespace Controladora
             catch (Exception ex)
             {
 
+
                 throw ex;
             }
         }

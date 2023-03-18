@@ -13,7 +13,7 @@ namespace WebApi_OpenBootcamp.Controllers
 {
     [EnableCors]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class InicioSesionController : ControllerBase
     {
 
