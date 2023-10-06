@@ -26,14 +26,15 @@ namespace DAO
             SqlCommand cmd = null;
             SqlDataReader dr;
             DtoUsuario _entidad = null;
+            DtoRol _rol = null;
             var resultado = new ClaseResultado<DtoUsuario>();
             try
             {
                 //conexion = DaoConexion.Conectar();
                 cmd = new SqlCommand("USP_T_USUARIO_VERIFICAR_ACCESO", conexion);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@P_USUARIO", entidad.C_DNI);
-                cmd.Parameters.AddWithValue("@P_PASSWORD", entidad.C_PASSWORD);
+                cmd.Parameters.AddWithValue("@P_USUARIO", entidad.LOGIN);
+                cmd.Parameters.AddWithValue("@P_PASSWORD", entidad.PASSWORD);
                 //cmd.Parameters.AddWithValue("@P_ID_TIENDA", entidad.C_ID_TIENDA);
                 cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                 conexion.Open();
@@ -41,17 +42,14 @@ namespace DAO
                 if (dr.Read())
                 {
                     _entidad = new DtoUsuario();
-                    _entidad.C_ID_USUARIO = Convert.ToInt32(dr["C_ID_USUARIO"]);
-                    _entidad.C_NOMBRECOMPLETO = dr["C_NOMBRECOMPLETO"].ToString();
-                    _entidad.C_CELULAR = dr["C_CELULAR"].ToString();
-                    _entidad.C_CORREO = dr["C_CORREO"].ToString();
-                    DtoTipoUsuario t = new DtoTipoUsuario();
-                    t.C_ID_TIPO_USUARIO = Convert.ToInt32(dr["C_ID_TIPO_USUARIO"]);
-                    t.C_NOMBRE_TIPO_USUARIO = dr["C_NOMBRE_TIPO_USUARIO"].ToString();
-                    //_entidad.TipoUsuario = t;
-                    //_entidad.C_ESTADO = Convert.ToBoolean(dr["C_ESTADO"]);
-                    //_entidad.C_ESTADO_STRING = Convert.ToString(dr["C_ESTADO_STRING"]);
-                    //_entidad.C_ULTIMO_ID = Convert.ToInt32(dr["C_ULTIMO_ID"]);
+                    _rol = new DtoRol();
+                    _entidad.ID_USUARIO = Convert.ToInt32(dr["ID_USUARIO"]);
+                    _entidad.NOMBRE = dr["NOMBRE_COMPLETO"].ToString();
+                    _entidad.CORREO = dr["CORREO"].ToString();
+                    _rol.ID_ROL = Convert.ToInt32(dr["ID_ROL"]);
+                    _rol.NOMBRE_ROL = Convert.ToString(dr["NOMBRE_ROL"]);
+                    
+                    _entidad.Rol = _rol;
                     resultado.Entidad = _entidad;
                     resultado.HuboError = false;
                 }
@@ -108,18 +106,18 @@ namespace DAO
                 while (dr.Read())
                 {
                     _entidad = new DtoUsuario();
-                    _entidad.C_ID_USUARIO = Convert.ToInt32(dr["C_ID_USUARIO"]);
+                    _entidad.ID_USUARIO = Convert.ToInt32(dr["ID_USUARIO"]);
                     //_entidad.C_ID_TIENDA = Convert.ToInt32(dr["C_ID_TIENDA"]);
                     //_entidad.C_NOMBRE_TIENDA = Convert.ToString(dr["C_NOMBRE_TIENDA"]);
-                    _entidad.C_DNI = Convert.ToString(dr["C_DNI"]).Trim();
+                    //_entidad.DNI = Convert.ToString(dr["DNI"]).Trim();
                     //_entidad.C_NOMBRECOMPLETO = Convert.ToString(dr["C_NOMBRECOMPLETO"]);
-                    _entidad.C_NOMBRES = Convert.ToString(dr["C_NOMBRES"]);
-                    _entidad.C_APELLIDO_PATERNO = Convert.ToString(dr["C_APELLIDO_PATERNO"]);
-                    _entidad.C_APELLIDO_MATERNO = Convert.ToString(dr["C_APELLIDO_MATERNO"]);
-                    _entidad.C_CORREO = Convert.ToString(dr["C_CORREO"]);
-                    _entidad.C_PASSWORD = Convert.ToString(dr["C_PASSWORD"]);
-                    _entidad.C_CELULAR = Convert.ToString(dr["C_CELULAR"]);
-                    _entidad.C_ESTADO = Convert.ToBoolean(dr["C_ESTADO"]);
+                    _entidad.NOMBRE = Convert.ToString(dr["NOMBRE"]);
+                    _entidad.APELLIDO_PATERNO = Convert.ToString(dr["APELLIDO_PATERNO"]);
+                    _entidad.APELLIDO_MATERNO = Convert.ToString(dr["APELLIDO_MATERNO"]);
+                    _entidad.CORREO = Convert.ToString(dr["CORREO"]);
+                    _entidad.PASSWORD = Convert.ToString(dr["PASSWORD"]);
+                    //_entidad.CELULAR = Convert.ToString(dr["CELULAR"]);
+                    _entidad.ESTADO = Convert.ToBoolean(dr["ESTADO"]);
 
                     //_entidad.C_ID_TIPO_USUARIO = Convert.ToInt32(dr["C_ID_TIPO_USUARIO"]);
                     //_entidadTipUsu = new DtoTipoUsuario();

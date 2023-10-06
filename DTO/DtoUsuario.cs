@@ -2,36 +2,31 @@
 {
     public class DtoUsuario : ClaseBase
     {
-        public int C_ID_USUARIO { get; set; }
-        public string C_DNI { get; set; } = string.Empty;
-        public int C_ID_TIENDA { get; set; }
-        public string C_NOMBRE_TIENDA { get; set; } = string.Empty;
-        //public DtoTipoUsuario TipoUsuario { get; set; } ;
-        public String C_NOMBRECOMPLETO { get; set; } = string.Empty;
-        public String C_NOMBRES { get; set; } = string.Empty;
-        public String C_APELLIDO_PATERNO { get; set; } = string.Empty;
-        public String C_APELLIDO_MATERNO { get; set; } = string.Empty;
+        public int ID_USUARIO { get; set; }
+        public string DNI { get; set; } = string.Empty;
+        public int ID_TIENDA { get; set; }
+        public String NOMBRE { get; set; } = string.Empty;
+        public String APELLIDO_PATERNO { get; set; } = string.Empty;
+        public String APELLIDO_MATERNO { get; set; } = string.Empty;
 
-        public String C_LOGIN { get; set; } = string.Empty;
+        public String LOGIN { get; set; } = string.Empty;
 
-        public String C_PASSWORD { get; set; } = string.Empty;
+        public String PASSWORD { get; set; } = string.Empty;
 
         public String ConfirmPassword { get; set; } = string.Empty;
 
-        public bool C_ESTADO { get; set; }
-        public string C_ESTADO_STRING { get; set; } = string.Empty;
+        public bool ESTADO { get; set; }
 
-        public String C_CORREO { get; set; } = string.Empty;
+        public String CORREO { get; set; } = string.Empty;
 
         public String C_FOTO { get; set; } = string.Empty;
-
 
         public String C_CELULAR { get; set; } = string.Empty;
 
         public int C_ID_TIPO_USUARIO { get; set; }
 
 
-
+        public DtoRol Rol { get; set; } = new DtoRol();
 
         //Para el cierre de la sesión
         public int C_ULTIMO_ID { get; set; }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Controladora;
 using DTO;
-
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 
