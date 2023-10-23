@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using DAO;
 using DTO;
+using Newtonsoft.Json;
 
 namespace Controladora
 {
@@ -12,23 +14,12 @@ namespace Controladora
     {
         DaoUsuario _dao = null;
         ClaseResultado<DtoUsuario> _resultado = null;
+        string apiUrl = "https://api.apis.net.pe/v2/reniec/dni?numero=";
+        string authToken = "apis-token-5900.yWdOuFOjkDEUSAO-YaR1IUQTnluDyGjf";
         public CtrUsuario()
         {
             _dao = new DaoUsuario();
             _resultado = new ClaseResultado<DtoUsuario>();
-        }
-
-        public List<DtoUsuario> Usuario_Listar()
-        {
-            try
-            {
-                return _dao.Usuario_Listar();
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
         }
 
         public DtoUsuario InicioSesion(DtoUsuario entidad)
@@ -45,5 +36,88 @@ namespace Controladora
             }
         }
 
+        public List<DtoUsuario> Usuario_Listar()
+        {
+            try
+            {
+                return _dao.Usuario_Listar();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public ClaseResultado<DtoUsuario> Usuario_Insertar_Actualizar(DtoUsuario _entidad)
+        {
+            try
+            {
+                _resultado = _dao.Usuario_Insertar_Actualizar(_entidad);
+            }
+            catch (Exception ex)
+            {
+                _resultado.HuboError = true;
+                _resultado.Mensaje = ex.Message.ToString();
+            }
+            return _resultado;
+        }
+
+        public ClaseResultado<DtoUsuario> Usuario_Activar_Inactivar(DtoUsuario entidad)
+        {
+            try
+            {
+                _resultado = _dao.Usuario_Activar_Inactivar(entidad);
+            }
+            catch (Exception ex)
+            {
+                _resultado.HuboError = true;
+                _resultado.Mensaje = ex.Message.ToString();
+            }
+            return _resultado;
+        }
+
+
+
+        public async Task<respuestaDNI> ConsultaDatosReniec(string numeroDocumento)
+        {
+            respuestaDNI entidad = new respuestaDNI();
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    // Configura el encabezado "Authorization" con el token de tipo Bearer
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+                    // Realiza una solicitud GET al servicio
+                    HttpResponseMessage response = await client.GetAsync(apiUrl+ numeroDocumento);
+                    // Verifica si la solicitud fue exitosa (código de estado 200)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Lee el contenido de la respuesta como una cadena
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        entidad = JsonConvert.DeserializeObject<respuestaDNI>(responseBody);
+                        Console.WriteLine("Respuesta del servicio:");
+                        Console.WriteLine(responseBody);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error en la solicitud. Código de estado: " + response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+            return entidad;
+        }
+    }
+    public class respuestaDNI
+    {
+        public string nombres { get; set; } = string.Empty;
+        public string apellidoPaterno { get; set; } = string.Empty;
+        public string apellidoMaterno { get; set; } = string.Empty;
+        public int tipoDocumento { get; set; }
+        public int numeroDocumento { get; set; }
     }
 }

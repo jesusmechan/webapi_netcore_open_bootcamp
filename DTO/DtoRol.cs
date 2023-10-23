@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public class DtoRol
+    public class DtoRol : ClaseBase
     {
-        public int ID_ROL { get; set; }
-        public string NOMBRE_ROL { get; set; } = string.Empty;
-        public string FECHA_CREACION { get; set; } = string.Empty;
-        public int USUARIO_CREACION { get; set; }
-        public string FECHA_MODIFICACION { get; set; } = string.Empty;
+        public int IDROL { get; set; }
+        public string NOMBREROL { get; set; } = string.Empty;
+        public bool ESTADO { get; set; }
+
     }
 }

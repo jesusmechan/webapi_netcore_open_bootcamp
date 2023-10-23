@@ -43,11 +43,12 @@ namespace DAO
                 {
                     _entidad = new DtoUsuario();
                     _rol = new DtoRol();
-                    _entidad.ID_USUARIO = Convert.ToInt32(dr["ID_USUARIO"]);
+                    _entidad.IDUSUARIO = Convert.ToInt32(dr["IDUSUARIO"]);
+                    _entidad.NUMERODOCUMENTO = Convert.ToString(dr["NUMERODOCUMENTO"]).Trim();
                     _entidad.NOMBRE = dr["NOMBRE_COMPLETO"].ToString();
                     _entidad.CORREO = dr["CORREO"].ToString();
-                    _rol.ID_ROL = Convert.ToInt32(dr["ID_ROL"]);
-                    _rol.NOMBRE_ROL = Convert.ToString(dr["NOMBRE_ROL"]);
+                    _rol.IDROL = Convert.ToInt32(dr["IDROL"]);
+                    _rol.NOMBREROL = Convert.ToString(dr["NOMBREROL"]);
                     
                     _entidad.Rol = _rol;
                     resultado.Entidad = _entidad;
@@ -106,23 +107,17 @@ namespace DAO
                 while (dr.Read())
                 {
                     _entidad = new DtoUsuario();
-                    _entidad.ID_USUARIO = Convert.ToInt32(dr["ID_USUARIO"]);
-                    //_entidad.C_ID_TIENDA = Convert.ToInt32(dr["C_ID_TIENDA"]);
-                    //_entidad.C_NOMBRE_TIENDA = Convert.ToString(dr["C_NOMBRE_TIENDA"]);
-                    //_entidad.DNI = Convert.ToString(dr["DNI"]).Trim();
-                    //_entidad.C_NOMBRECOMPLETO = Convert.ToString(dr["C_NOMBRECOMPLETO"]);
+                    _entidad.IDUSUARIO = Convert.ToInt32(dr["IDUSUARIO"]);
+                    _entidad.IDROL = Convert.ToInt32(dr["IDROL"]);
+                    _entidad.NUMERODOCUMENTO = Convert.ToString(dr["NUMERODOCUMENTO"]).Trim();
                     _entidad.NOMBRE = Convert.ToString(dr["NOMBRE"]);
-                    _entidad.APELLIDO_PATERNO = Convert.ToString(dr["APELLIDO_PATERNO"]);
-                    _entidad.APELLIDO_MATERNO = Convert.ToString(dr["APELLIDO_MATERNO"]);
+                    _entidad.APELLIDOPATERNO = Convert.ToString(dr["APELLIDOPATERNO"]);
+                    _entidad.APELLIDOMATERNO = Convert.ToString(dr["APELLIDOMATERNO"]);
                     _entidad.CORREO = Convert.ToString(dr["CORREO"]);
-                    _entidad.PASSWORD = Convert.ToString(dr["PASSWORD"]);
-                    //_entidad.CELULAR = Convert.ToString(dr["CELULAR"]);
+                    _entidad.SEXO = Convert.ToString(dr["SEXO"]);
+                    _entidad.FECHANACIMIENTO = Convert.ToString(dr["FECHANACIMIENTO"]);
+                    _entidad.LOGIN = Convert.ToString(dr["LOGIN"]);
                     _entidad.ESTADO = Convert.ToBoolean(dr["ESTADO"]);
-
-                    //_entidad.C_ID_TIPO_USUARIO = Convert.ToInt32(dr["C_ID_TIPO_USUARIO"]);
-                    //_entidadTipUsu = new DtoTipoUsuario();
-                    //_entidadTipUsu.C_NOMBRE_TIPO_USUARIO = Convert.ToString(dr["C_NOMBRE_TIPO_USUARIO"]);
-                    //_entidad.TipoUsuario = _entidadTipUsu;
                     _lista.Add(_entidad);
                 }
             }
@@ -137,54 +132,111 @@ namespace DAO
 
             return _lista;
         }
-        //public ClaseResultado<DtoUsuario> Usuario_Insertar_Actualizar(DtoUsuario _entidad, string _accion)
-        //{
-        //    int success = 0;
-        //    SqlCommand cmd = null;
-        //    var resultado = new ClaseResultado<DtoUsuario>();
+        public ClaseResultado<DtoUsuario> Usuario_Insertar_Actualizar(DtoUsuario _entidad)
+        {
+            int success = 0;
+            SqlCommand cmd = null;
+            var resultado = new ClaseResultado<DtoUsuario>();
 
-        //    try
-        //    {
-        //        conexion = DaoConexion.Conectar();
-        //        cmd = new SqlCommand("USP_T_USUARIO_INSERTAR_ACTUALIZAR", conexion);
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        cmd.Parameters.AddWithValue("@P_DATO", _accion);
-        //        cmd.Parameters.AddWithValue("@P_ID_USUARIO", _entidad.C_ID_USUARIO);
-        //        cmd.Parameters.AddWithValue("@P_TIPOUSUARIO", _entidad.C_ID_TIPO_USUARIO);
-        //        //cmd.Parameters.AddWithValue("@P_ID_TIENDA", _entidad.C_ID_TIENDA);
-        //        cmd.Parameters.AddWithValue("@P_DNI", _entidad.C_DNI);
-        //        cmd.Parameters.AddWithValue("@P_NOMBRES", _entidad.C_NOMBRES);
-        //        cmd.Parameters.AddWithValue("@P_APELLIDO_PATERNO", _entidad.C_APELLIDO_PATERNO);
-        //        cmd.Parameters.AddWithValue("@P_APELLIDO_MATERNO", _entidad.C_APELLIDO_MATERNO);
-        //        cmd.Parameters.AddWithValue("@P_CORREO", _entidad.C_CORREO);
-        //        cmd.Parameters.AddWithValue("@P_PASSWORD", _entidad.C_PASSWORD);
-        //        //cmd.Parameters.AddWithValue("@P_ESTADO", _entidad.C_ESTADO);
-        //        cmd.Parameters.AddWithValue("@P_CELULAR", _entidad.C_CELULAR);
-        //        cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
-        //        //_parameterValue.Add("Msj", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
-        //        conexion.Open();
-        //        success = cmd.ExecuteNonQuery();
-        //        if (success == 1)
-        //        {
-        //            resultado.Mensaje = cmd.Parameters["@P_MENSAJE"].Value.ToString();
-        //            resultado.HuboError = false;
-        //        }
-        //        else
-        //        {
-        //            resultado.Mensaje = cmd.Parameters["@P_MENSAJE"].Value.ToString();
-        //            resultado.HuboError = true;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ex.Message.ToString();
-        //    }
-        //    finally
-        //    {
-        //        cmd.Connection.Close();
-        //    }
-        //    return resultado;
-        //}
+            try
+            {
+                //conexion = DaoConexion.Conectar();
+                cmd = new SqlCommand("USP_T_MANTENIMIENTO_USUARIO", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ACCION", _entidad.ACCION);
+                cmd.Parameters.AddWithValue("@P_ID_USUARIO", _entidad.IDUSUARIO);
+                cmd.Parameters.AddWithValue("@P_ID_ROL", _entidad.IDROL);
+                cmd.Parameters.AddWithValue("@P_NUMERO_DOCUMENTO", _entidad.NUMERODOCUMENTO);
+                cmd.Parameters.AddWithValue("@P_NOMBRE", _entidad.NOMBRE);
+                cmd.Parameters.AddWithValue("@P_APELLIDO_PATERNO", _entidad.APELLIDOPATERNO);
+                cmd.Parameters.AddWithValue("@P_APELLIDO_MATERNO", _entidad.APELLIDOMATERNO);
+                cmd.Parameters.AddWithValue("@P_FECHA_NACIMIENTO", _entidad.FECHANACIMIENTO);
+                cmd.Parameters.AddWithValue("@P_SEXO", _entidad.SEXO);
+                cmd.Parameters.AddWithValue("@P_CORREO", _entidad.CORREO);
+                cmd.Parameters.AddWithValue("@P_LOGIN", _entidad.LOGIN);
+                cmd.Parameters.AddWithValue("@P_PASSWORD", _entidad.PASSWORD);
+                cmd.Parameters.AddWithValue("@P_USUARIO_CREACION", _entidad.IDUSUARIOCREACION);
+                cmd.Parameters.AddWithValue("@P_USUARIO_MODIFICACION", _entidad.IDUSUARIOMODIFICACION);
+                cmd.Parameters.Add("@P_CODIGO", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
+                //_parameterValue.Add("Msj", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
+                conexion.Open();
+                success = cmd.ExecuteNonQuery();
+                if (success == 1)
+                {
+                    resultado.UltimoId = Convert.ToInt32(cmd.Parameters["@P_CODIGO"].Value);
+                    resultado.Mensaje = cmd.Parameters["@P_MENSAJE"].Value.ToString();
+                    resultado.HuboError = false;
+                }
+                else
+                {
+                    resultado.Mensaje = cmd.Parameters["@P_MENSAJE"].Value.ToString();
+                    resultado.HuboError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                resultado.Mensaje = ex.Message.ToString();
+                resultado.HuboError = true;
+            }
+            finally
+            {
+
+                cmd.Connection.Close();
+            }
+            return resultado;
+        }
+
+        public ClaseResultado<DtoUsuario> Usuario_Activar_Inactivar(DtoUsuario entidad)
+        {
+            int success = 0;
+            bool exito = false;
+            SqlCommand cmd = null;
+            var resultado = new ClaseResultado<DtoUsuario>();
+
+            try
+            {
+                cmd = new SqlCommand("USP_T_USUARIO_ACTIVAR_INACTIVAR", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@P_IDUSUARIO", entidad.IDUSUARIO);
+                cmd.Parameters.AddWithValue("@P_ACCION", entidad.ACCION);
+                conexion.Open();
+                success = cmd.ExecuteNonQuery();
+                if (success == 1)
+                {
+                    resultado.Mensaje = "Se actualizó correctamente el estado del usuario";
+                    resultado.HuboError = false;
+                }
+                else
+                {
+                    resultado.Mensaje = "No se pudo actualizar el estado del usuario";
+                    resultado.HuboError = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultado.Mensaje = ex.Message.ToString();
+                resultado.HuboError = true;
+            }
+            finally
+            {
+                cmd.Connection.Close();
+            }
+            return resultado;
+        }
+
+
+
+
+
+
+
+
+
+
+
         //public DtoUsuario Usuario_Consultar(int _usuarioid)
         //{
         //    SqlCommand cmd = null;

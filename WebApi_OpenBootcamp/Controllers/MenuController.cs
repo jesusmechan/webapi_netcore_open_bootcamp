@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi_OpenBootcamp.Controllers
 {
-    [EnableCors("CorsPolicy")]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class MenuController : ControllerBase
     {

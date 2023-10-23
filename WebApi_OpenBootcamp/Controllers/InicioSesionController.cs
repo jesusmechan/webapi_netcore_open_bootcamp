@@ -41,11 +41,11 @@ namespace WebApi_OpenBootcamp.Controllers
             {
                 var keyBytes = Encoding.ASCII.GetBytes(secretKey);
                 var claims = new ClaimsIdentity();
-                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, entidad.DNI));
+                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, entidad.NUMERODOCUMENTO));
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = claims,
-                    Expires = DateTime.UtcNow.AddMinutes(5),
+                    Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),
                     SecurityAlgorithms.HmacSha256)
                 };
@@ -54,7 +54,7 @@ namespace WebApi_OpenBootcamp.Controllers
                 var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
                 string tokenCreado = tokenHandler.WriteToken(tokenConfig);
 
-                data.C_TOKEN = tokenCreado;
+                data.CTOKEN = tokenCreado;
                 //return StatusCode(StatusCodes.Status200OK, new { response = data });
 
             }
