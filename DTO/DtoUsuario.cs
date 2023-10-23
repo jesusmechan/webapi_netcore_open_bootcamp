@@ -1,13 +1,16 @@
-﻿namespace DTO
+﻿using System.Text.Json.Serialization;
+
+namespace DTO
 {
     public class DtoUsuario : ClaseBase
     {
-        public int ID_USUARIO { get; set; }
-        public string DNI { get; set; } = string.Empty;
-        public int ID_TIENDA { get; set; }
+        public int IDUSUARIO { get; set; }
+        public int IDROL { get; set; }
+        public string NUMERODOCUMENTO { get; set; } = string.Empty;
+        public int IDTIENDA { get; set; }
         public String NOMBRE { get; set; } = string.Empty;
-        public String APELLIDO_PATERNO { get; set; } = string.Empty;
-        public String APELLIDO_MATERNO { get; set; } = string.Empty;
+        public String APELLIDOPATERNO { get; set; } = string.Empty;
+        public String APELLIDOMATERNO { get; set; } = string.Empty;
 
         public String LOGIN { get; set; } = string.Empty;
 
@@ -19,17 +22,18 @@
 
         public String CORREO { get; set; } = string.Empty;
 
-        public String C_FOTO { get; set; } = string.Empty;
+        public String CFOTO { get; set; } = string.Empty;
 
-        public String C_CELULAR { get; set; } = string.Empty;
+        public String CCELULAR { get; set; } = string.Empty;
 
-        public int C_ID_TIPO_USUARIO { get; set; }
-
+        public int CIDTIPOUSUARIO { get; set; }
 
         public DtoRol Rol { get; set; } = new DtoRol();
 
         //Para el cierre de la sesión
-        public int C_ULTIMO_ID { get; set; }
-        public string C_TOKEN { get; set; } = string.Empty;
+        public int CULTIMOID { get; set; }
+        public string CTOKEN { get; set; } = string.Empty;
+        public string FECHANACIMIENTO { get; set;} = string.Empty;
+        public string SEXO { get; set; } = string.Empty;
     }
 }

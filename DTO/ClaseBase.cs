@@ -8,9 +8,10 @@ namespace DTO
 {
     public  class ClaseBase
     {
-        public int C_USUARIO_REGISTRO { get; set; } 
-        public string C_FECHA_REGISTRO { get; set; } = string.Empty;
-        public int C_USUARIO_MODIFICACION { get; set; }
-        public string C_FECHA_MODIFICACION { get; set; } = string.Empty; 
+        public string ACCION { get; set; } = string.Empty;
+        public int IDUSUARIOCREACION { get; set; }
+        public string FECHACREACION { get; set; } = string.Empty;
+        public int IDUSUARIOMODIFICACION { get; set; }
+        public string FECHAMODIFICACION { get; set; } = string.Empty;
     }
 }
