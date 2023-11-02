@@ -149,7 +149,8 @@ namespace DAO
             }
             finally
             {
-                conexion.Dispose();
+                //conexion.Dispose();
+                conexion.Close();
                 //cmd.Connection.Close();
             }
             return resultado;
