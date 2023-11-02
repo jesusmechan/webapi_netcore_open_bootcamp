@@ -18,7 +18,6 @@ namespace DAO
         {
             conexion = new SqlConnection(cadena);
         }
-
         public List<DtoRol> Rol_Listar()
         {
             SqlCommand cmd = null;
@@ -62,7 +61,6 @@ namespace DAO
 
             return _lista;
         }
-
         public ClaseResultado<DtoRol> Rol_Insertar_Actualizar(DtoRol _entidad)
         {
             int success = 0;
@@ -109,8 +107,6 @@ namespace DAO
             }
             return resultado;
         }
-
-
         public ClaseResultado<DtoRol> Rol_Activar_Inactivar(DtoRol entidad)
         {
             int success = 0;
