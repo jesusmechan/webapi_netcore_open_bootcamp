@@ -33,7 +33,7 @@ namespace WebApi_OpenBootcamp.Controllers
         {
             try
             {
-                _entidad.PASSWORD = Encrypt.Encrypt.GetSHA256(_entidad.PASSWORD);
+                //_entidad.PASSWORD = Encrypt.Encrypt.GetSHA256(_entidad.PASSWORD);
                 resultado = ctr.Usuario_Insertar_Actualizar(_entidad);
                 return resultado;
             }

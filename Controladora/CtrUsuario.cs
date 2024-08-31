@@ -14,12 +14,16 @@ namespace Controladora
     {
         DaoUsuario _dao = null;
         ClaseResultado<DtoUsuario> _resultado = null;
+        ClaseResultado<Sesion> _resultadoSesion = null;
+        ClaseResultado<SesionXUsuario> _resultadoSesionxUsu = null;
         string apiUrl = "https://api.apis.net.pe/v2/reniec/dni?numero=";
         string authToken = "apis-token-5900.yWdOuFOjkDEUSAO-YaR1IUQTnluDyGjf";
         public CtrUsuario()
         {
             _dao = new DaoUsuario();
             _resultado = new ClaseResultado<DtoUsuario>();
+            _resultadoSesion = new ClaseResultado<Sesion>();
+            _resultadoSesionxUsu = new ClaseResultado<SesionXUsuario>();
         }
 
         public DtoUsuario InicioSesion(DtoUsuario entidad)
@@ -77,6 +81,48 @@ namespace Controladora
             return _resultado;
         }
 
+
+        public ClaseResultado<Sesion> Sesion_MNT(Sesion entidad)
+        {
+            try
+            {
+                _resultadoSesion = _dao.Sesion_MNT(entidad);
+            }
+            catch (Exception ex)
+            {
+                _resultado.HuboError = true;
+                _resultado.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesion;
+        }
+
+        public ClaseResultado<Sesion> Validar_Sesion(Sesion entidad)
+        {
+            try
+            {
+                _resultadoSesion = _dao.Validar_Sesion(entidad);
+            }
+            catch (Exception ex)
+            {
+                _resultado.HuboError = true;
+                _resultado.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesion;
+        }
+
+        public ClaseResultado<SesionXUsuario> Listar_Usuarios_Logueados()
+        {
+            try
+            {
+                _resultadoSesionxUsu = _dao.Listar_Usuarios_Logueados();
+            }
+            catch (Exception ex)
+            {
+                _resultado.HuboError = true;
+                _resultado.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesionxUsu;
+        }
 
 
         public async Task<respuestaDNI> ConsultaDatosReniec(string numeroDocumento)

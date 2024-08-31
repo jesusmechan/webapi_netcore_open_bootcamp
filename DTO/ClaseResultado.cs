@@ -29,6 +29,7 @@ namespace DTO
         public string Mensaje { get; set; }
 
         public int UltimoId { get; set; }
+        public bool ExisteSesion { get; set; }
 
     }
 }

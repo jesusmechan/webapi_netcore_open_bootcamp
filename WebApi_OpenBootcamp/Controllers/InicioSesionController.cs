@@ -18,27 +18,26 @@ namespace WebApi_OpenBootcamp.Controllers
     {
 
         CtrUsuario ctr = null;
+        ClaseResultado<Sesion> _resultadoSesion = null;
+        ClaseResultado<SesionXUsuario> _resultadoSesionXUsu = null;
         private readonly string? secretKey;
         public InicioSesionController(IConfiguration config)
         {
             ctr = new CtrUsuario();
+            _resultadoSesion = new ClaseResultado<Sesion>();
+            _resultadoSesionXUsu = new ClaseResultado<SesionXUsuario>();
             secretKey = config.GetSection("settings").GetSection("secretkey").ToString();
         }
         [HttpPost]
-        //public DtoUsuario InicioSesion(string usuario, string password)
         public DtoUsuario VerificarAcceso(DtoUsuario entidad)
-        //public IActionResult VerificarAcceso(DtoUsuario entidad)
         {
             DtoUsuario data = new DtoUsuario();
-            //DtoUsuario entidad = new DtoUsuario();
-            //entidad.C_DNI = usuario;
-            //entidad.C_PASSWORD = password;
-            entidad.PASSWORD = Encrypt.Encrypt.GetSHA256(entidad.PASSWORD);
+            ClaseResultado<Sesion> resultadoSesion = new ClaseResultado<Sesion>();
             data = ctr.InicioSesion(entidad);
-            //string contraEncriptada = Encrypt.Encrypt.GetSHA256(entidad.C_PASSWORD);
 
-            if (data != null)
+            if (data.IDUSUARIO != 0)
             {
+                resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
                 var keyBytes = Encoding.ASCII.GetBytes(secretKey);
                 var claims = new ClaimsIdentity();
                 claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, entidad.NUMERODOCUMENTO));
@@ -55,13 +54,83 @@ namespace WebApi_OpenBootcamp.Controllers
                 string tokenCreado = tokenHandler.WriteToken(tokenConfig);
 
                 data.CTOKEN = tokenCreado;
-                //return StatusCode(StatusCodes.Status200OK, new { response = data });
+                data.IDSESION = resultadoSesion.UltimoId;
 
             }
             return data;
-            //else
-            //    return StatusCode(StatusCodes.Status401Unauthorized, new { response = "" });
+        }
+        [HttpPost]
+        public ClaseResultado<Sesion> RegistrarSesion(int usuario, string accion)
+        {
+            Sesion entidad = new Sesion();
+            try
+            {
+                entidad.IDUSUARIO = usuario;
+                entidad.ACCION = accion;
+                _resultadoSesion = ctr.Sesion_MNT(entidad);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
 
+            }
+            return _resultadoSesion;
+        }
+
+        [HttpPost]
+        public ClaseResultado<Sesion> CerrarSesion(Sesion sesion)
+        {
+            Sesion entidad = new Sesion();
+            try
+            {
+                _resultadoSesion = ctr.Sesion_MNT(sesion);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+
+            }
+            return _resultadoSesion;
+        }
+
+        [HttpPost]
+        public ClaseResultado<Sesion> Validar_Sesion(Sesion entidad)
+        {
+            try
+            {
+                _resultadoSesion = ctr.Validar_Sesion(entidad);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesion;
+        }
+
+        [HttpPost]
+        public ClaseResultado<SesionXUsuario> Listar_Usuarios_Logueados()
+        {
+            try
+            {
+                _resultadoSesionXUsu = ctr.Listar_Usuarios_Logueados();
+                return _resultadoSesionXUsu;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesionXUsu;
         }
     }
 }

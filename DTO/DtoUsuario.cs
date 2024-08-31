@@ -15,6 +15,7 @@ namespace DTO
         public String LOGIN { get; set; } = string.Empty;
 
         public String PASSWORD { get; set; } = string.Empty;
+        public String PASSWORD_HASHED { get; set; } = string.Empty;
 
         public String ConfirmPassword { get; set; } = string.Empty;
 
@@ -35,5 +36,24 @@ namespace DTO
         public string CTOKEN { get; set; } = string.Empty;
         public string FECHANACIMIENTO { get; set;} = string.Empty;
         public string SEXO { get; set; } = string.Empty;
+        public int IDSESION { get; set; }
+    }
+
+    public class Sesion : ClaseBase
+    {
+        public int IDSESION { get; set; }
+        public int IDUSUARIO { get; set; }
+        public string HORAINICIO { get; set; } = string.Empty;
+        public string HORASALIDA { get; set; } = string.Empty;
+        public string LOGUEADO { get; set; } = string.Empty; 
+        public string USUARIO { get; set; } = string.Empty;
+    }
+
+    public class SesionXUsuario
+    {
+        public string IDUSUARIO { get; set; }
+        public string USUARIO { get; set; }
+        public int IDSESION { get; set; }
+        public string HORAINICIO { get; set; }
     }
 }

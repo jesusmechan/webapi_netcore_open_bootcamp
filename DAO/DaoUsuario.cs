@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using Dapper;
 using DTO;
 
 namespace DAO
@@ -16,79 +18,32 @@ namespace DAO
             conexion = new SqlConnection(cadena);
         }
 
-        //public SqlDataReader GetDr()
-        //{
-        //    return dr;
-        //}
-
         public DtoUsuario InicioSesion(DtoUsuario entidad)
         {
-            SqlCommand cmd = null;
-            SqlDataReader dr;
-            DtoUsuario _entidad = null;
-            DtoRol _rol = null;
-            var resultado = new ClaseResultado<DtoUsuario>();
+            var resultado = new DtoUsuario();
             try
             {
-                //conexion = DaoConexion.Conectar();
-                cmd = new SqlCommand("USP_T_USUARIO_VERIFICAR_ACCESO", conexion);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@P_USUARIO", entidad.LOGIN);
-                cmd.Parameters.AddWithValue("@P_PASSWORD", entidad.PASSWORD);
-                //cmd.Parameters.AddWithValue("@P_ID_TIENDA", entidad.C_ID_TIENDA);
-                cmd.Parameters.Add("@P_MENSAJE", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
-                conexion.Open();
-                dr = cmd.ExecuteReader();
-                if (dr.Read())
-                {
-                    _entidad = new DtoUsuario();
-                    _rol = new DtoRol();
-                    _entidad.IDUSUARIO = Convert.ToInt32(dr["IDUSUARIO"]);
-                    _entidad.NUMERODOCUMENTO = Convert.ToString(dr["NUMERODOCUMENTO"]).Trim();
-                    _entidad.NOMBRE = dr["NOMBRE_COMPLETO"].ToString();
-                    _entidad.CORREO = dr["CORREO"].ToString();
-                    _rol.IDROL = Convert.ToInt32(dr["IDROL"]);
-                    _rol.NOMBREROL = Convert.ToString(dr["NOMBREROL"]);
-                    
-                    _entidad.Rol = _rol;
-                    resultado.Entidad = _entidad;
-                    resultado.HuboError = false;
-                }
+                var parametros = new DynamicParameters();
+                parametros.Add("P_USUARIO", entidad.LOGIN, DbType.String, ParameterDirection.Input);
+                parametros.Add("P_PASSWORD", entidad.PASSWORD, DbType.String, ParameterDirection.Input);
+                parametros.Add("P_MENSAJE", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
+                var response = conexion.Query<DtoUsuario>("USP_T_USUARIO_VERIFICAR_ACCESO", parametros, commandType: CommandType.StoredProcedure);
+                if(response.Count() > 0)
+                    resultado = (DtoUsuario)response.ToList()[0];
             }
             catch (Exception ex)
             {
-                throw ex;
+                ex.Message.ToString();
+                //resultado.Mensaje = ex.Message.ToString();
+                //resultado.HuboError = true;
             }
             finally
             {
-                cmd.Connection.Close();
+                conexion.Close();
             }
-            return _entidad;
+            return resultado;
         }
-        //public int Usuario_Cerrar_Sesion(int ultimo_id)
-        //{
-        //    int success = 0;
-        //    SqlCommand cmd = null;
-        //    try
-        //    {
-        //        conexion = DaoConexion.Conectar();
-        //        cmd = new SqlCommand("USP_T_SESION_USUARIO_CERRAR", conexion);
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        cmd.Parameters.AddWithValue("@ULTIMO_ID", ultimo_id);
-        //        conexion.Open();
-        //        success = cmd.ExecuteNonQuery();
-        //    }
-        //    catch (Exception)
-        //    {
 
-        //        throw;
-        //    }
-        //    finally
-        //    {
-        //        cmd.Connection.Close();
-        //    }
-        //    return success;
-        //}
         public List<DtoUsuario> Usuario_Listar()
         {
             SqlCommand cmd = null;
@@ -228,13 +183,109 @@ namespace DAO
         }
 
 
+        public ClaseResultado<Sesion> Sesion_MNT(Sesion entidad)
+        {
+            var resultado = new ClaseResultado<Sesion>();
+
+            try
+            {
+                var parametros = new DynamicParameters();
+                parametros.Add("IDSESION", entidad.IDSESION, DbType.String, ParameterDirection.Input);
+                parametros.Add("IDUSUARIO", entidad.IDUSUARIO, DbType.String, ParameterDirection.Input);
+                parametros.Add("ACCION", entidad.ACCION, DbType.String, ParameterDirection.Input);
+                parametros.Add("P_CODIGO", DBNull.Value, DbType.Int32, ParameterDirection.Output);
+                parametros.Add("P_MENSAJE", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
+                if (conexion.Execute("USP_MNT_SESION", parametros, commandType: CommandType.StoredProcedure) > 0)
+                {
+                    resultado.UltimoId = parametros.Get<int>("P_CODIGO");
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.HuboError = false;
+                }
+                else
+                {
+                    resultado.UltimoId = 0;
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.HuboError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultado.UltimoId = 0;
+                resultado.HuboError = true;
+                resultado.Mensaje = ex.ToString();
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return resultado;
+
+        }
 
 
+        public ClaseResultado<Sesion> Validar_Sesion(Sesion entidad)
+        {
+            var resultado = new ClaseResultado<Sesion>();
+
+            try
+            {
+                var parametros = new DynamicParameters();
+                //parametros.Add("IDSESION", entidad.IDSESION, DbType.String, ParameterDirection.Input);
+                parametros.Add("IDUSUARIO", entidad.IDUSUARIO, DbType.String, ParameterDirection.Input);
+                parametros.Add("P_EXISTE", DBNull.Value, DbType.Boolean, ParameterDirection.Output);
+                parametros.Add("P_MENSAJE", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
+                if (conexion.Execute("USP_VALIDAR_SESION_X_USUARIO", parametros, commandType: CommandType.StoredProcedure) > 0)
+                {
+                    resultado.ExisteSesion = parametros.Get<bool>("P_EXISTE");
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.HuboError = false;
+                }
+                else
+                {
+                    resultado.ExisteSesion = false;
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.HuboError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultado.UltimoId = 0;
+                resultado.HuboError = true;
+                resultado.Mensaje = ex.ToString();
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return resultado;
+
+        }
 
 
+        public ClaseResultado<SesionXUsuario> Listar_Usuarios_Logueados()
+        {
+            var resultado = new ClaseResultado<SesionXUsuario>();
+            try
+            {
 
+                //_lista = new List<SesionXUsuario>();
+                var response = conexion.Query<SesionXUsuario>("USP_LISTAR_USUARIO_X_SESION", null, commandType: CommandType.StoredProcedure);
+                if (response.Count() > 0)
+                    resultado.Lista = (List<SesionXUsuario>)response;
+            }
+            catch (Exception ex)
+            {
+                resultado.UltimoId = 0;
+                resultado.HuboError = true;
+                resultado.Mensaje = ex.ToString();
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return resultado;
 
-
+        }
 
 
         //public DtoUsuario Usuario_Consultar(int _usuarioid)
