@@ -15,11 +15,14 @@ namespace Controladora
         {
             dao = new DaoImportacion();
         }
-        public void InsertDataIntoDatabase(List<DtoImportacionVisitante> dataList)
+        public bool InsertDataIntoDatabase(List<DtoImportacionVisitante> dataList)
         {
-            //dao.InsertDataIntoDatabase(dataList);
-            //dao.BulkInsertData(dataList);
-            dao.InsertarDatosGA(dataList);
+            return dao.InsertarDatosGA(dataList);
+        }
+
+        public bool InsertDataIntoDatabase2(List<DtoImportacionAsitencia> dataList)
+        {
+            return dao.InsertarDatosGA2(dataList);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace WebApi_OpenBootcamp.Controllers
     public class ImportacionController : ControllerBase
     {
         CtrImportacion ctrImportacion = null;
+        private const int BatchSize = 5000;
         public ImportacionController()
         {
             ctrImportacion = new CtrImportacion();
@@ -30,16 +31,32 @@ namespace WebApi_OpenBootcamp.Controllers
                 file.CopyTo(stream);
             }
 
-            var dataList = leerExcelAsistencia(filePath);
 
+            bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            foreach (var batch in leerExcelAsistencia(filePath))
+            {
+                if (!cargarAsistencia(batch))
+                {
+                    success = false; // Si alguna inserción falla, cambiamos a false
+                    break; // Puedes optar por continuar o detener el proceso según tu caso
+                }
+            }
 
-
-            return Ok("Data inserted successfully.");
+            if (success)
+                return Ok("Data inserted successfully.");
+            else
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
         }
 
-        private List<DtoImportacionAsitencia> leerExcelAsistencia(string filePath)
+        private bool cargarAsistencia(List<DtoImportacionAsitencia> lista)
         {
-            var dataList = new List<DtoImportacionAsitencia>();
+            return ctrImportacion.InsertDataIntoDatabase2(lista);
+        }
+
+
+        private IEnumerable<List<DtoImportacionAsitencia>> leerExcelAsistencia(string filePath)
+        {
+            var dataList = new List<DtoImportacionAsitencia>(BatchSize);
 
             using (var workbook = new XLWorkbook(filePath))
             {
@@ -52,11 +69,42 @@ namespace WebApi_OpenBootcamp.Controllers
                         fecha = row.Cell(2).GetValue<string>()
                     };
                     dataList.Add(data);
+
+                    if (dataList.Count >= BatchSize)
+                    {
+                        yield return dataList;
+                        dataList.Clear();
+                    }
+                }
+
+                if (dataList.Any())
+                {
+                    yield return dataList;
                 }
             }
-
-            return dataList;
         }
+
+
+        //private List<DtoImportacionAsitencia> leerExcelAsistencia(string filePath)
+        //{
+        //    var dataList = new List<DtoImportacionAsitencia>();
+
+        //    using (var workbook = new XLWorkbook(filePath))
+        //    {
+        //        var worksheet = workbook.Worksheet(1); // Lee la primera hoja de Excel
+        //        foreach (var row in worksheet.RowsUsed().Skip(1)) // Omite la primera fila si es encabezado
+        //        {
+        //            var data = new DtoImportacionAsitencia
+        //            {
+        //                codigo = row.Cell(1).GetValue<string>(),
+        //                fecha = row.Cell(2).GetValue<string>()
+        //            };
+        //            dataList.Add(data);
+        //        }
+        //    }
+
+        //    return dataList;
+        //}
 
         //[HttpPost]
         //public IActionResult cargarEstudiante(IFormFile file)
@@ -99,10 +147,6 @@ namespace WebApi_OpenBootcamp.Controllers
         //    return dataList;
         //}
 
-
-
-        private const int BatchSize = 5000;
-
         [HttpPost]
         public IActionResult cargarEstudiante(IFormFile file)
         {
@@ -116,12 +160,21 @@ namespace WebApi_OpenBootcamp.Controllers
                 file.CopyTo(stream);
             }
 
+
+            bool success = true; // Inicialmente asumimos que el proceso es exitoso
             foreach (var batch in leerExcelVisitanteEnLotes(filePath))
             {
-                cargarEstudiante(batch);
+                if (!cargarEstudiante(batch))
+                {
+                    success = false; // Si alguna inserción falla, cambiamos a false
+                    break; // Puedes optar por continuar o detener el proceso según tu caso
+                }
             }
 
-            return Ok("Data inserted successfully.");
+            if (success)
+                return Ok("Data inserted successfully.");
+            else
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
         }
 
         private IEnumerable<List<DtoImportacionVisitante>> leerExcelVisitanteEnLotes(string filePath)
@@ -177,9 +230,9 @@ namespace WebApi_OpenBootcamp.Controllers
 
 
 
-        private void cargarEstudiante(List<DtoImportacionVisitante> lista)
+        private bool cargarEstudiante(List<DtoImportacionVisitante> lista)
         {
-            ctrImportacion.InsertDataIntoDatabase(lista);
+            return ctrImportacion.InsertDataIntoDatabase(lista);
         }
 
     }

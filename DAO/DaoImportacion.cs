@@ -140,7 +140,7 @@ namespace DAO
         //    return dataTable;
         //}
 
-        public void InsertarDatosGA(List<DtoImportacionVisitante> valores)
+        public bool InsertarDatosGA(List<DtoImportacionVisitante> valores)
         {
             try
             {
@@ -161,10 +161,12 @@ namespace DAO
                         comando.ExecuteNonQuery();
                     }
                 }
+                return true;
             }
             catch (Exception ex)
             {
                 ex.Message.ToString();
+                return false;
             }
         }
 
@@ -191,6 +193,54 @@ namespace DAO
         }
 
 
+        public bool InsertarDatosGA2(List<DtoImportacionAsitencia> valores)
+        {
+            try
+            {
+                using (var cnx = new SqlConnection(conexion.ConnectionString))
+                {
+                    using (var comando = new SqlCommand("InsertInfoAsistencia", cnx))
+                    {
+                        comando.CommandType = CommandType.StoredProcedure;
+                        SqlParameter parametro = new SqlParameter("@DataModel", SqlDbType.Structured)
+                        {
+                            TypeName = "dbo.cargarInfoVisitas",
+                            Value = ObtenerContenidoLista(valores)
+                        };
+
+                        comando.Parameters.Add(parametro);
+
+                        cnx.Open();
+                        comando.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                return false;
+            }
+        }
+
+
+        private static IEnumerable<SqlDataRecord> ObtenerContenidoLista(List<DtoImportacionAsitencia> valores)
+        {
+            SqlMetaData[] esquema = new SqlMetaData[]
+            {
+                new SqlMetaData("Column1", SqlDbType.NVarChar, 100),
+                new SqlMetaData("Column2", SqlDbType.NVarChar, 100),
+            };
+
+            SqlDataRecord _DataRecord = new SqlDataRecord(esquema);
+
+            foreach (var valor in valores)
+            {
+                _DataRecord.SetString(0, valor.codigo);
+                _DataRecord.SetString(1, valor.fecha);
+                yield return _DataRecord;
+            }
+        }
 
     }
 }
