@@ -4,6 +4,7 @@ using ClosedXML.Excel;
 using DTO;
 using DocumentFormat.OpenXml.Math;
 using Controladora;
+using System.Text.RegularExpressions;
 
 namespace WebApi_OpenBootcamp.Controllers
 {
@@ -188,10 +189,11 @@ namespace WebApi_OpenBootcamp.Controllers
                 {
                     var data = new DtoImportacionVisitante
                     {
-                        codigo = row.Cell(1).GetValue<string>(),
-                        nombres = row.Cell(2).GetValue<string>(),
-                        apellidoPaterno = devolverApellido("AP", row.Cell(3).GetValue<string>()),
-                        apellidoMaterno = devolverApellido("AM", row.Cell(3).GetValue<string>())
+                        codigo = row.Cell(1).GetValue<string>().Trim(),
+                        nombres = row.Cell(2).GetValue<string>().Trim(),
+                        apellidoPaterno = devolverApellido("AP", row.Cell(3).GetValue<string>().Trim()),
+                        apellidoMaterno = devolverApellido("AM", row.Cell(3).GetValue<string>().Trim()),
+                        especialidad = row.Cell(4).GetValue<string>().Trim()
                     };
                     dataList.Add(data);
 
@@ -210,10 +212,15 @@ namespace WebApi_OpenBootcamp.Controllers
         }
         private string devolverApellido(string tipoApe, string apellidoFull)
         {
+            string apellidoLimpio = string.Empty;
+
             if (string.IsNullOrWhiteSpace(apellidoFull))
                 return string.Empty;
 
-            var apellidos = apellidoFull.Split(' ');
+            //limpiando apellido
+            apellidoLimpio = quitarEspaciosApellido(apellidoFull);
+
+            var apellidos = apellidoLimpio.Trim().Split(' ');
 
             // Verificamos que haya al menos dos apellidos
             if (apellidos.Length < 2)
@@ -227,6 +234,12 @@ namespace WebApi_OpenBootcamp.Controllers
             };
         }
 
+        private string quitarEspaciosApellido(string apellido)
+        {
+            string resultado = string.Empty;
+            resultado = Regex.Replace(apellido, @"\s+", " ");
+            return resultado;
+        }
 
 
 
@@ -234,6 +247,27 @@ namespace WebApi_OpenBootcamp.Controllers
         {
             return ctrImportacion.InsertDataIntoDatabase(lista);
         }
+
+
+
+        #region RESPUESTA DE LA IMPORTACION DE VISITANTES Y ASISTENCIA
+        [HttpGet]
+        public List<DtoRespuestaImportacion> listarRespuestaImportacion()
+        {
+            List<DtoRespuestaImportacion> response = new List<DtoRespuestaImportacion>();
+            try
+            {
+                response = ctrImportacion.listarRespuestaImportacion();
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            return response;
+        }
+
+        #endregion
+
 
     }
 

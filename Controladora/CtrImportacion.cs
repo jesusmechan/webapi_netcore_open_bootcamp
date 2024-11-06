@@ -24,5 +24,10 @@ namespace Controladora
         {
             return dao.InsertarDatosGA2(dataList);
         }
+
+        public List<DtoRespuestaImportacion> listarRespuestaImportacion()
+        {
+            return dao.listarRespuestaImportacion();
+        }
     }
 }

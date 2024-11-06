@@ -26,7 +26,7 @@ namespace Controladora
             _resultadoSesionxUsu = new ClaseResultado<SesionXUsuario>();
         }
 
-        public DtoUsuario InicioSesion(DtoUsuario entidad)
+        public DtoUsuario InicioSesion(Login entidad)
         {
             try
             {

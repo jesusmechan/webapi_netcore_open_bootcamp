@@ -51,9 +51,16 @@ namespace DTO
 
     public class SesionXUsuario
     {
-        public string IDUSUARIO { get; set; }
-        public string USUARIO { get; set; }
+        public int IDUSUARIO { get; set; }
+        public string USUARIO { get; set; } = string.Empty;
         public int IDSESION { get; set; }
-        public string HORAINICIO { get; set; }
+        public string HORAINICIO { get; set; } = string.Empty;
+    }
+
+    public class Login
+    {
+        public string LOGIN { get; set; } = string.Empty;
+
+        public string PASSWORD { get; set; } = string.Empty;
     }
 }

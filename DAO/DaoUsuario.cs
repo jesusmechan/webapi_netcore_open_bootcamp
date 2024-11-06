@@ -18,7 +18,7 @@ namespace DAO
             conexion = new SqlConnection(cadena);
         }
 
-        public DtoUsuario InicioSesion(DtoUsuario entidad)
+        public DtoUsuario InicioSesion(Login entidad)
         {
             var resultado = new DtoUsuario();
             try

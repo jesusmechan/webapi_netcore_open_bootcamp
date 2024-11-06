@@ -12,6 +12,7 @@ namespace DTO
         public string nombres { get; set; } = string.Empty;
         public string apellidoPaterno { get; set; } = string.Empty;
         public string apellidoMaterno { get; set; } = string.Empty;
+        public string especialidad { get; set; } = string.Empty;    
 
     }
 }

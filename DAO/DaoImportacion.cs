@@ -146,12 +146,12 @@ namespace DAO
             {
                 using (var cnx = new SqlConnection(conexion.ConnectionString))
                 {
-                    using (var comando = new SqlCommand("InsertDataModel", cnx))
+                    using (var comando = new SqlCommand("USP_CARGAR_INFO_ESTUDIANTES_TEMP", cnx))
                     {
                         comando.CommandType = CommandType.StoredProcedure;
                         SqlParameter parametro = new SqlParameter("@DataModel", SqlDbType.Structured)
                         {
-                            TypeName = "dbo.DataModelType",
+                            TypeName = "dbo.cargarInfoEstudiantes",
                             Value = ObtenerContenidoLista(valores)
                         };
 
@@ -178,6 +178,7 @@ namespace DAO
                 new SqlMetaData("Column2", SqlDbType.NVarChar, 100),
                 new SqlMetaData("Column3", SqlDbType.NVarChar, 100),
                 new SqlMetaData("Column4", SqlDbType.NVarChar, 100),
+                new SqlMetaData("Column5", SqlDbType.NVarChar, 100),
             };
 
             SqlDataRecord _DataRecord = new SqlDataRecord(esquema);
@@ -188,6 +189,7 @@ namespace DAO
                 _DataRecord.SetString(1, valor.nombres);
                 _DataRecord.SetString(2, valor.apellidoPaterno);
                 _DataRecord.SetString(3, valor.apellidoMaterno);
+                _DataRecord.SetString(4, valor.especialidad);
                 yield return _DataRecord;
             }
         }
@@ -241,6 +243,32 @@ namespace DAO
                 yield return _DataRecord;
             }
         }
+
+
+
+        public List<DtoRespuestaImportacion> listarRespuestaImportacion()
+        {
+            var resultado = new List<DtoRespuestaImportacion>();
+            try
+            {
+
+                var response = conexion.Query<DtoRespuestaImportacion>("USP_IMPORTACION_ESTUDIANTES", null, commandType: CommandType.StoredProcedure);
+                if (response.Count() > 0)
+                    resultado = (List<DtoRespuestaImportacion>)response;
+            }
+            catch (Exception ex)
+            {
+                //resultado.UltimoId = 0;
+                //resultado.HuboError = true;
+                //resultado.Mensaje = ex.ToString();
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return resultado;
+        }
+
 
     }
 }

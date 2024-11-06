@@ -29,18 +29,18 @@ namespace WebApi_OpenBootcamp.Controllers
             secretKey = config.GetSection("settings").GetSection("secretkey").ToString();
         }
         [HttpPost]
-        public DtoUsuario VerificarAcceso(DtoUsuario entidad)
+        public DtoUsuario VerificarAcceso(Login login)
         {
             DtoUsuario data = new DtoUsuario();
             ClaseResultado<Sesion> resultadoSesion = new ClaseResultado<Sesion>();
-            data = ctr.InicioSesion(entidad);
+            data = ctr.InicioSesion(login);
 
             if (data.IDUSUARIO != 0)
             {
-                resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
+                //resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
                 var keyBytes = Encoding.ASCII.GetBytes(secretKey);
                 var claims = new ClaimsIdentity();
-                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, entidad.NUMERODOCUMENTO));
+                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, data.NUMERODOCUMENTO));
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = claims,
