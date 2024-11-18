@@ -29,36 +29,71 @@ namespace WebApi_OpenBootcamp.Controllers
             secretKey = config.GetSection("settings").GetSection("secretkey").ToString();
         }
         [HttpPost]
-        public DtoUsuario VerificarAcceso(Login login)
+        public ClaseResultado<DtoUsuario> VerificarAcceso(Login login)
         {
             DtoUsuario data = new DtoUsuario();
             ClaseResultado<Sesion> resultadoSesion = new ClaseResultado<Sesion>();
-            data = ctr.InicioSesion(login);
+            ClaseResultado<DtoUsuario> resultado = new ClaseResultado<DtoUsuario>();
+            //data = ctr.InicioSesion(login);
+            resultado = ctr.InicioSesion(login);
 
-            if (data.IDUSUARIO != 0)
-            {
-                //resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
-                var keyBytes = Encoding.ASCII.GetBytes(secretKey);
-                var claims = new ClaimsIdentity();
-                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, data.NUMERODOCUMENTO));
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = claims,
-                    Expires = DateTime.UtcNow.AddHours(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),
-                    SecurityAlgorithms.HmacSha256)
-                };
+            //if (data.IDUSUARIO != 0)
+            //{
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
-                string tokenCreado = tokenHandler.WriteToken(tokenConfig);
+            //    data.CTOKEN = GenerarTokenJWT(data.NUMERODOCUMENTO);
 
-                data.CTOKEN = tokenCreado;
-                data.IDSESION = resultadoSesion.UltimoId;
+            //    ////resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
+            //    //var keyBytes = Encoding.ASCII.GetBytes(secretKey);
+            //    //var claims = new ClaimsIdentity();
+            //    //claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, data.NUMERODOCUMENTO));
+            //    //var tokenDescriptor = new SecurityTokenDescriptor
+            //    //{
+            //    //    Subject = claims,
+            //    //    //Expires = DateTime.UtcNow.AddHours(1),
+            //    //    Expires = DateTime.UtcNow.AddDays(1),
+            //    //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),
+            //    //    SecurityAlgorithms.HmacSha256)
+            //    //};
 
-            }
-            return data;
+            //    //var tokenHandler = new JwtSecurityTokenHandler();
+            //    //var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
+            //    //string tokenCreado = tokenHandler.WriteToken(tokenConfig);
+
+            //    //data.CTOKEN = tokenCreado;
+            //    //data.IDSESION = resultadoSesion.UltimoId;
+
+            //}
+            return resultado;
         }
+
+        [HttpPost]
+        public DtoUsuario GenerarTokenJWT(DtoUsuario parametro)
+        {
+            DtoUsuario resultado = new DtoUsuario();
+            resultado = parametro;
+
+
+
+            var keyBytes = Encoding.ASCII.GetBytes(secretKey);
+            var claims = new ClaimsIdentity();
+            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, parametro.NUMERODOCUMENTO));
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = claims,
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
+            resultado.CTOKEN = tokenHandler.WriteToken(tokenConfig);
+            return resultado;
+        }
+
+
+
+
         [HttpPost]
         public ClaseResultado<Sesion> RegistrarSesion(int usuario, string accion)
         {

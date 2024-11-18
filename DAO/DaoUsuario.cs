@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using Dapper;
@@ -18,27 +19,65 @@ namespace DAO
             conexion = new SqlConnection(cadena);
         }
 
-        public DtoUsuario InicioSesion(Login entidad)
+        //public DtoUsuario InicioSesion(Login entidad)
+        //{
+        //    var resultado = new DtoUsuario();
+        //    try
+        //    {
+        //        var parametros = new DynamicParameters();
+        //        parametros.Add("P_USUARIO", entidad.LOGIN, DbType.String, ParameterDirection.Input);
+        //        parametros.Add("P_PASSWORD", entidad.PASSWORD, DbType.String, ParameterDirection.Input);
+        //        parametros.Add("P_MENSAJE", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
+        //        parametros.Add("ES_VALIDO", DBNull.Value, DbType.Boolean, ParameterDirection.Output);
+        //        var response = conexion.Query<DtoUsuario>("USP_T_USUARIO_VERIFICAR_ACCESO2", parametros, commandType: CommandType.StoredProcedure);
+        //        if(response.Count() > 0)
+        //            resultado = (DtoUsuario)response.ToList()[0];
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ex.Message.ToString();
+        //        //resultado.Mensaje = ex.Message.ToString();
+        //        //resultado.HuboError = true;
+        //    }
+        //    finally
+        //    {
+        //        conexion.Close();
+        //    }
+        //    return resultado;
+        //}
+
+
+        public ClaseResultado<DtoUsuario> InicioSesion(Login entidad)
         {
-            var resultado = new DtoUsuario();
+            var resultado = new ClaseResultado<DtoUsuario>();
             try
             {
                 var parametros = new DynamicParameters();
                 parametros.Add("P_USUARIO", entidad.LOGIN, DbType.String, ParameterDirection.Input);
                 parametros.Add("P_PASSWORD", entidad.PASSWORD, DbType.String, ParameterDirection.Input);
                 parametros.Add("P_MENSAJE", DBNull.Value, DbType.String, ParameterDirection.Output, 100);
-                var response = conexion.Query<DtoUsuario>("USP_T_USUARIO_VERIFICAR_ACCESO", parametros, commandType: CommandType.StoredProcedure);
-                if(response.Count() > 0)
-                    resultado = (DtoUsuario)response.ToList()[0];
+                parametros.Add("ES_VALIDO", DBNull.Value, DbType.Boolean, ParameterDirection.Output,1);
+                var response = conexion.Query<DtoUsuario>("USP_T_USUARIO_VERIFICAR_ACCESO2", parametros, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                if(response.ES_VALIDO)
+                {
+                    resultado.Entidad = (DtoUsuario)response;
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.EsValido = parametros.Get<bool>("ES_VALIDO");
+                }
+                else
+                {
+                    resultado.Entidad = (DtoUsuario)response;
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.EsValido = parametros.Get<bool>("ES_VALIDO");
+                }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
-                //resultado.Mensaje = ex.Message.ToString();
-                //resultado.HuboError = true;
+                resultado.HuboError = false;
+                resultado.Mensaje = ex.ToString();
             }
-            finally
-            {
+            finally {
+                
                 conexion.Close();
             }
             return resultado;

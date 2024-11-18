@@ -26,18 +26,18 @@ namespace Controladora
             _resultadoSesionxUsu = new ClaseResultado<SesionXUsuario>();
         }
 
-        public DtoUsuario InicioSesion(Login entidad)
+        public ClaseResultado<DtoUsuario> InicioSesion(Login entidad)
         {
+            var resultado = new ClaseResultado<DtoUsuario>();
             try
             {
-                return _dao.InicioSesion(entidad);
+                 resultado = _dao.InicioSesion(entidad);
             }
             catch (Exception ex)
             {
-
-
-                throw ex;
+                ex.Message.ToString();
             }
+            return resultado;
         }
 
         public List<DtoUsuario> Usuario_Listar()

@@ -30,6 +30,7 @@ namespace DTO
 
         public int UltimoId { get; set; }
         public bool ExisteSesion { get; set; }
+        public bool EsValido { get; set; }
 
     }
 }

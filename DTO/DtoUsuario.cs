@@ -37,6 +37,9 @@ namespace DTO
         public string FECHANACIMIENTO { get; set;} = string.Empty;
         public string SEXO { get; set; } = string.Empty;
         public int IDSESION { get; set; }
+        public string NOMBREROL { get; set; } = string.Empty;
+        public string NOMBRECOMPLETO { get; set; } = string.Empty;
+        public bool ES_VALIDO { get; set; }
     }
 
     public class Sesion : ClaseBase

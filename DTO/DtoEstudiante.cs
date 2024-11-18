@@ -16,6 +16,7 @@ namespace DTO
         public string apellidoPaterno { get; set; } = string.Empty;
         public string apellidoMaterno { get; set; } = string.Empty;
         public bool estado { get; set; }
+        public string especialidad { get; set; } = string.Empty;
     }
 
     public class filtrosBusqueda

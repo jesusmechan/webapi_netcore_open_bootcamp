@@ -5,7 +5,7 @@ using DTO;
 using DocumentFormat.OpenXml.Math;
 using Controladora;
 using System.Text.RegularExpressions;
-
+using System.IO;
 namespace WebApi_OpenBootcamp.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -28,8 +28,37 @@ namespace WebApi_OpenBootcamp.Controllers
         [HttpPost]
         public IActionResult cargarAsistencia(IFormFile file)
         {
+            //if (file == null || file.Length == 0)
+            //    return BadRequest("Please upload a valid Excel file.");
+
+            //var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    file.CopyTo(stream);
+            //}
+
+
+            //bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            //foreach (var batch in leerExcelAsistencia(filePath))
+            //{
+            //    if (!cargarAsistencia(batch))
+            //    {
+            //        success = false; // Si alguna inserción falla, cambiamos a false
+            //        break; // Puedes optar por continuar o detener el proceso según tu caso
+            //    }
+            //}
+
+            //if (success)
+            //    return Ok("Data inserted successfully.");
+            //else
+            //    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
+
+
             if (file == null || file.Length == 0)
-                return BadRequest("Please upload a valid Excel file.");
+            {
+                return BadRequest(new { success = false, message = "Please upload a valid Excel file." });
+            }
 
             var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
 
@@ -38,21 +67,19 @@ namespace WebApi_OpenBootcamp.Controllers
                 file.CopyTo(stream);
             }
 
-
-            bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            bool success = true;
             foreach (var batch in leerExcelAsistencia(filePath))
             {
                 if (!cargarAsistencia(batch))
                 {
-                    success = false; // Si alguna inserción falla, cambiamos a false
-                    break; // Puedes optar por continuar o detener el proceso según tu caso
+                    success = false;
+                    break;
                 }
             }
 
-            if (success)
-                return Ok("Data inserted successfully.");
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
+            return success ? Ok(new { success = true, message = "Data inserted successfully." })
+                : StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "An error occurred while inserting data." });
+
         }
 
         private bool cargarAsistencia(List<DtoImportacionAsitencia> lista)
@@ -156,10 +183,41 @@ namespace WebApi_OpenBootcamp.Controllers
 
         #region IMPORTACION DE ESTUDIANTES - CARGA INICIAL
         [HttpPost]
+        //public IActionResult cargarEstudiante(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //        return BadRequest("Please upload a valid Excel file.");
+
+        //    var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+
+        //    using (var stream = new FileStream(filePath, FileMode.Create))
+        //    {
+        //        file.CopyTo(stream);
+        //    }
+
+
+        //    bool success = true; // Inicialmente asumimos que el proceso es exitoso
+        //    foreach (var batch in leerExcelVisitanteEnLotes(filePath))
+        //    {
+        //        if (!cargarEstudiante(batch))
+        //        {
+        //            success = false; // Si alguna inserción falla, cambiamos a false
+        //            break; // Puedes optar por continuar o detener el proceso según tu caso
+        //        }
+        //    }
+
+        //    if (success)
+        //        return Ok("Data inserted successfully.");
+        //    else
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
+        //}
+
         public IActionResult cargarEstudiante(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("Please upload a valid Excel file.");
+            {
+                return BadRequest(new { success = false, message = "Please upload a valid Excel file." });
+            }
 
             var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
 
@@ -168,23 +226,19 @@ namespace WebApi_OpenBootcamp.Controllers
                 file.CopyTo(stream);
             }
 
-
-            bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            bool success = true;
             foreach (var batch in leerExcelVisitanteEnLotes(filePath))
             {
                 if (!cargarEstudiante(batch))
                 {
-                    success = false; // Si alguna inserción falla, cambiamos a false
-                    break; // Puedes optar por continuar o detener el proceso según tu caso
+                    success = false;
+                    break;
                 }
             }
 
-            if (success)
-                return Ok("Data inserted successfully.");
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
+            return success? Ok(new { success = true, message = "Data inserted successfully." })
+                : StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "An error occurred while inserting data." });
         }
-
         private IEnumerable<List<DtoImportacionVisitante>> leerExcelVisitanteEnLotes(string filePath)
         {
             var dataList = new List<DtoImportacionVisitante>(BatchSize);
@@ -240,7 +294,6 @@ namespace WebApi_OpenBootcamp.Controllers
                 _ => string.Empty,
             };
         }
-
         private string quitarEspaciosApellido(string apellido)
         {
             string resultado = string.Empty;
@@ -254,32 +307,82 @@ namespace WebApi_OpenBootcamp.Controllers
         #endregion
 
         #region IMPORTACION DE ESTUDIANTES - PERIODICA
+
+        //public IActionResult cargarAsistencia(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest(new { success = false, message = "Please upload a valid Excel file." });
+        //    }
+
+        //    var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+
+        //    using (var stream = new FileStream(filePath, FileMode.Create))
+        //    {
+        //        file.CopyTo(stream);
+        //    }
+
+        //    bool success = true;
+        //    foreach (var batch in leerExcelAsistencia(filePath))
+        //    {
+        //        if (!cargarAsistencia(batch))
+        //        {
+        //            success = false;
+        //            break;
+        //        }
+        //    }
+
+        //    return success ? Ok(new { success = true, message = "Data inserted successfully." })
+        //        : StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "An error occurred while inserting data." });
+
+        //}
+
         [HttpPost]
         public IActionResult cargarEstudianteXPeriodo(IFormFile file)
         {
+            //if (file == null || file.Length == 0)
+            //    return BadRequest("Please upload a valid Excel file.");
+
+            //var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    file.CopyTo(stream);
+            //}
+
+            //bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            //foreach (var batch in leerExcelVisitanteEnLotes2(filePath))
+            //{
+            //    if (!cargarEstudiante(batch))
+            //    {
+            //        success = false; // Si alguna inserción falla, cambiamos a false
+            //        break; // Puedes optar por continuar o detener el proceso según tu caso
+            //    }
+            //}
+
             if (file == null || file.Length == 0)
-                return BadRequest("Please upload a valid Excel file.");
+            {
+                return BadRequest(new { success = false, message = "Please upload a valid Excel file." });
+            }
 
             var filePath = Path.Combine(Path.GetTempPath(), file.FileName);
+
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 file.CopyTo(stream);
             }
 
-            bool success = true; // Inicialmente asumimos que el proceso es exitoso
+            bool success = true;
             foreach (var batch in leerExcelVisitanteEnLotes2(filePath))
             {
                 if (!cargarEstudiante(batch))
                 {
-                    success = false; // Si alguna inserción falla, cambiamos a false
-                    break; // Puedes optar por continuar o detener el proceso según tu caso
+                    success = false;
+                    break;
                 }
             }
 
-            if (success)
-                return Ok("Data inserted successfully.");
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while inserting data.");
+            return success ? Ok(new { success = true, message = "Data inserted successfully." })
+                : StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "An error occurred while inserting data." });
         }
 
         private IEnumerable<List<DtoImportacionVisitante>> leerExcelVisitanteEnLotes2(string filePath)
@@ -371,9 +474,6 @@ namespace WebApi_OpenBootcamp.Controllers
         }
         #endregion
 
-
-
-
         #region RESPUESTA DE LA IMPORTACION DE VISITANTES Y ASISTENCIA
         [HttpGet]
         public List<DtoRespuestaImportacion> listarRespuestaImportacion()
@@ -392,6 +492,29 @@ namespace WebApi_OpenBootcamp.Controllers
 
         #endregion
 
+
+        //[HttpGet("download")]
+        [HttpGet]
+        public IActionResult DownloadFile(string nombreArchivo)
+        {
+            // Ruta absoluta del archivo
+            string filePath = @"C:\Users\Jesús Mechan\Desktop\SISTEMA DE INVENTARIO\WebApi_OpenBootcamp\WebApi_OpenBootcamp\Formatos_Importacion\" + nombreArchivo;
+
+            // Verifica si el archivo existe
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Archivo no encontrado.");
+            }
+
+            // Obtén el nombre del archivo
+            var fileName = Path.GetFileName(filePath);
+
+            // Lee el archivo en un arreglo de bytes
+            var bytes = System.IO.File.ReadAllBytes(filePath);
+
+            // Devuelve el archivo como una descarga
+            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
 
     }
 
