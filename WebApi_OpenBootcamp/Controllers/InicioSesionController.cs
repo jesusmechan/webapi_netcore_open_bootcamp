@@ -18,50 +18,154 @@ namespace WebApi_OpenBootcamp.Controllers
     {
 
         CtrUsuario ctr = null;
+        ClaseResultado<Sesion> _resultadoSesion = null;
+        ClaseResultado<SesionXUsuario> _resultadoSesionXUsu = null;
         private readonly string? secretKey;
         public InicioSesionController(IConfiguration config)
         {
             ctr = new CtrUsuario();
+            _resultadoSesion = new ClaseResultado<Sesion>();
+            _resultadoSesionXUsu = new ClaseResultado<SesionXUsuario>();
             secretKey = config.GetSection("settings").GetSection("secretkey").ToString();
         }
         [HttpPost]
-        //public DtoUsuario InicioSesion(string usuario, string password)
-        public DtoUsuario VerificarAcceso(DtoUsuario entidad)
-        //public IActionResult VerificarAcceso(DtoUsuario entidad)
+        public ClaseResultado<DtoUsuario> VerificarAcceso(Login login)
         {
             DtoUsuario data = new DtoUsuario();
-            //DtoUsuario entidad = new DtoUsuario();
-            //entidad.C_DNI = usuario;
-            //entidad.C_PASSWORD = password;
-            entidad.PASSWORD = Encrypt.Encrypt.GetSHA256(entidad.PASSWORD);
-            data = ctr.InicioSesion(entidad);
-            //string contraEncriptada = Encrypt.Encrypt.GetSHA256(entidad.C_PASSWORD);
+            ClaseResultado<Sesion> resultadoSesion = new ClaseResultado<Sesion>();
+            ClaseResultado<DtoUsuario> resultado = new ClaseResultado<DtoUsuario>();
+            //data = ctr.InicioSesion(login);
+            resultado = ctr.InicioSesion(login);
 
-            if (data != null)
+            //if (data.IDUSUARIO != 0)
+            //{
+
+            //    data.CTOKEN = GenerarTokenJWT(data.NUMERODOCUMENTO);
+
+            //    ////resultadoSesion = RegistrarSesion(data.IDUSUARIO, "I");
+            //    //var keyBytes = Encoding.ASCII.GetBytes(secretKey);
+            //    //var claims = new ClaimsIdentity();
+            //    //claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, data.NUMERODOCUMENTO));
+            //    //var tokenDescriptor = new SecurityTokenDescriptor
+            //    //{
+            //    //    Subject = claims,
+            //    //    //Expires = DateTime.UtcNow.AddHours(1),
+            //    //    Expires = DateTime.UtcNow.AddDays(1),
+            //    //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),
+            //    //    SecurityAlgorithms.HmacSha256)
+            //    //};
+
+            //    //var tokenHandler = new JwtSecurityTokenHandler();
+            //    //var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
+            //    //string tokenCreado = tokenHandler.WriteToken(tokenConfig);
+
+            //    //data.CTOKEN = tokenCreado;
+            //    //data.IDSESION = resultadoSesion.UltimoId;
+
+            //}
+            return resultado;
+        }
+
+        [HttpPost]
+        public DtoUsuario GenerarTokenJWT(DtoUsuario parametro)
+        {
+            DtoUsuario resultado = new DtoUsuario();
+            resultado = parametro;
+
+
+
+            var keyBytes = Encoding.ASCII.GetBytes(secretKey);
+            var claims = new ClaimsIdentity();
+            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, parametro.NUMERODOCUMENTO));
+
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                var keyBytes = Encoding.ASCII.GetBytes(secretKey);
-                var claims = new ClaimsIdentity();
-                claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, entidad.NUMERODOCUMENTO));
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = claims,
-                    Expires = DateTime.UtcNow.AddHours(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),
-                    SecurityAlgorithms.HmacSha256)
-                };
+                Subject = claims,
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256)
+            };
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
-                string tokenCreado = tokenHandler.WriteToken(tokenConfig);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenConfig = tokenHandler.CreateToken(tokenDescriptor);
+            resultado.CTOKEN = tokenHandler.WriteToken(tokenConfig);
+            return resultado;
+        }
 
-                data.CTOKEN = tokenCreado;
-                //return StatusCode(StatusCodes.Status200OK, new { response = data });
+
+
+
+        [HttpPost]
+        public ClaseResultado<Sesion> RegistrarSesion(int usuario, string accion)
+        {
+            Sesion entidad = new Sesion();
+            try
+            {
+                entidad.IDUSUARIO = usuario;
+                entidad.ACCION = accion;
+                _resultadoSesion = ctr.Sesion_MNT(entidad);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
 
             }
-            return data;
-            //else
-            //    return StatusCode(StatusCodes.Status401Unauthorized, new { response = "" });
+            return _resultadoSesion;
+        }
 
+        [HttpPost]
+        public ClaseResultado<Sesion> CerrarSesion(Sesion sesion)
+        {
+            Sesion entidad = new Sesion();
+            try
+            {
+                _resultadoSesion = ctr.Sesion_MNT(sesion);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+
+            }
+            return _resultadoSesion;
+        }
+
+        [HttpPost]
+        public ClaseResultado<Sesion> Validar_Sesion(Sesion entidad)
+        {
+            try
+            {
+                _resultadoSesion = ctr.Validar_Sesion(entidad);
+                return _resultadoSesion;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesion;
+        }
+
+        [HttpPost]
+        public ClaseResultado<SesionXUsuario> Listar_Usuarios_Logueados()
+        {
+            try
+            {
+                _resultadoSesionXUsu = ctr.Listar_Usuarios_Logueados();
+                return _resultadoSesionXUsu;
+            }
+            catch (Exception ex)
+            {
+                _resultadoSesion.HuboError = true;
+                _resultadoSesion.UltimoId = 0;
+                _resultadoSesion.Mensaje = ex.Message.ToString();
+            }
+            return _resultadoSesionXUsu;
         }
     }
 }
