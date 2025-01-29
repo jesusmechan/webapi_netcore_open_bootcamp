@@ -40,16 +40,29 @@ namespace Controladora
             return resultado;
         }
 
-        public List<DtoUsuario> Usuario_Listar()
+        //public List<DtoUsuario> Usuario_Listar()
+        //{
+        //    try
+        //    {
+        //        return _dao.Usuario_Listar();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        public ClaseResultado<DtoUsuario> Usuario_Listar()
         {
             try
             {
-                return _dao.Usuario_Listar();
+                _resultado = _dao.Usuario_Listar();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+            return _resultado;
         }
 
 

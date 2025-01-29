@@ -36,5 +36,9 @@ namespace Controladora
         {
             return _dao.MNT_Estudiante(_entidad);
         }
+        public ClaseResultado<DtoEstudiante> Estudiante_Activar_Inactivar(DtoEstudiante entidad)
+        {
+            return _dao.Estudiante_Activar_Inactivar(entidad);
+        }
     }
 }

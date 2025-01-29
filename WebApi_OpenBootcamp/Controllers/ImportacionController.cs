@@ -214,6 +214,9 @@ namespace WebApi_OpenBootcamp.Controllers
 
         public IActionResult cargarEstudiante(IFormFile file)
         {
+            string[] columnasRequeridas = new string[] { "Código", "Nombres", "Apellidos", "Especialidad" }; // Reemplaza con las columnas necesarias
+
+
             if (file == null || file.Length == 0)
             {
                 return BadRequest(new { success = false, message = "Please upload a valid Excel file." });
@@ -224,6 +227,13 @@ namespace WebApi_OpenBootcamp.Controllers
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 file.CopyTo(stream);
+            }
+
+            // Validar las columnas
+            var columnasValidas = ValidarColumnas(filePath, columnasRequeridas);
+            if (!columnasValidas)
+            {
+                return Ok(new { success = false, message = "Formato de carga de estudiantes incorrecta.." });
             }
 
             bool success = true;
@@ -239,6 +249,23 @@ namespace WebApi_OpenBootcamp.Controllers
             return success? Ok(new { success = true, message = "Data inserted successfully." })
                 : StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "An error occurred while inserting data." });
         }
+
+        // Función para validar las columnas del archivo Excel
+        private bool ValidarColumnas(string filePath, string[] columnasRequeridas)
+        {
+            using (var workbook = new XLWorkbook(filePath))
+            {
+                var worksheet = workbook.Worksheet(1); // Usamos la primera hoja
+                var headerRow = worksheet.Row(1); // Primera fila que contiene los encabezados
+
+                // Obtenemos los valores de las celdas en la primera fila
+                var headerCells = headerRow.Cells().Select(cell => cell.Value.ToString().Trim()).ToArray();
+
+                // Verificamos si todas las columnas requeridas están presentes
+                return columnasRequeridas.All(col => headerCells.Contains(col));
+            }
+        }
+
         private IEnumerable<List<DtoImportacionVisitante>> leerExcelVisitanteEnLotes(string filePath)
         {
             var dataList = new List<DtoImportacionVisitante>(BatchSize);
