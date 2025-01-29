@@ -57,5 +57,23 @@ namespace WebApi_OpenBootcamp.Controllers
             return resultado;
         }
 
+        [HttpPost]
+        public ClaseResultado<DtoEstudiante> Estudiante_Activar_Inactivar(DtoEstudiante _entidad)
+        {
+            try
+            {
+                resultado = ctr.Estudiante_Activar_Inactivar(_entidad);
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                resultado.HuboError = true;
+                resultado.UltimoId = 0;
+                resultado.Mensaje = ex.Message.ToString();
+
+            }
+            return resultado;
+        }
+
     }
 }

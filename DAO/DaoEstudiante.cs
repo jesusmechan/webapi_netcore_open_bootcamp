@@ -90,5 +90,45 @@ namespace DAO
             }
             return resultado;
         }
+
+        public ClaseResultado<DtoEstudiante> Estudiante_Activar_Inactivar(DtoEstudiante entidad)
+        {
+            SqlCommand cmd = null;
+            var resultado = new ClaseResultado<DtoEstudiante>();
+
+            var parametros = new DynamicParameters();
+            parametros.Add("P_ACCION", entidad.ACCION, DbType.String, ParameterDirection.Input);
+            parametros.Add("P_IDESTUDIANTE", entidad.idEstudiante, DbType.Int32, ParameterDirection.Input);
+            parametros.Add("P_MENSAJE", DBNull.Value, dbType: DbType.String, direction: ParameterDirection.Output, 100);
+
+
+            try
+            {
+                if(conexion.Execute("USP_T_ESTUDIANTE_ACTIVAR_INACTIVAR", parametros, commandType: CommandType.StoredProcedure) > 0)
+                {
+                    resultado.Mensaje = parametros.Get<string>("P_MENSAJE");
+                    resultado.HuboError = false;
+                }
+                else
+                {
+                    resultado.Mensaje = "No se pudo actualizar el estado del usuario";
+                    resultado.HuboError = true;
+                }
+                    
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                resultado.Mensaje = ex.Message.ToString();
+                resultado.HuboError = true;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return resultado;
+        }
+
+
     }
 }

@@ -83,49 +83,77 @@ namespace DAO
             return resultado;
         }
 
-        public List<DtoUsuario> Usuario_Listar()
+        //public List<DtoUsuario> Usuario_Listar()
+        //{
+        //    SqlCommand cmd = null;
+        //    SqlDataReader dr = null;
+        //    List<DtoUsuario> _lista = null;
+        //    DtoUsuario _entidad = null;
+        //    DtoTipoUsuario _entidadTipUsu = null;
+        //    try
+        //    {
+        //        //conexion = DaoConexion.Conectar();
+        //        cmd = new SqlCommand("USP_T_USUARIO_LISTAR", conexion);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        conexion.Open();
+        //        dr = cmd.ExecuteReader();
+        //        _lista = new List<DtoUsuario>();
+        //        while (dr.Read())
+        //        {
+        //            _entidad = new DtoUsuario();
+        //            _entidad.IDUSUARIO = Convert.ToInt32(dr["IDUSUARIO"]);
+        //            _entidad.IDROL = Convert.ToInt32(dr["IDROL"]);
+        //            _entidad.NUMERODOCUMENTO = Convert.ToString(dr["NUMERODOCUMENTO"]).Trim();
+        //            _entidad.NOMBRE = Convert.ToString(dr["NOMBRE"]);
+        //            _entidad.APELLIDOPATERNO = Convert.ToString(dr["APELLIDOPATERNO"]);
+        //            _entidad.APELLIDOMATERNO = Convert.ToString(dr["APELLIDOMATERNO"]);
+        //            _entidad.CORREO = Convert.ToString(dr["CORREO"]);
+        //            _entidad.SEXO = Convert.ToString(dr["SEXO"]);
+        //            _entidad.FECHANACIMIENTO = Convert.ToString(dr["FECHANACIMIENTO"]);
+        //            _entidad.LOGIN = Convert.ToString(dr["LOGIN"]);
+        //            _entidad.ESTADO = Convert.ToBoolean(dr["ESTADO"]);
+        //            _lista.Add(_entidad);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ex.Message.ToString();
+        //    }
+        //    finally
+        //    {
+        //        cmd.Connection.Close();
+        //    }
+
+        //    return _lista;
+        //}
+
+
+
+        public ClaseResultado<DtoUsuario> Usuario_Listar()
         {
-            SqlCommand cmd = null;
-            SqlDataReader dr = null;
-            List<DtoUsuario> _lista = null;
-            DtoUsuario _entidad = null;
-            DtoTipoUsuario _entidadTipUsu = null;
+            var resultado = new ClaseResultado<DtoUsuario>();
             try
             {
-                //conexion = DaoConexion.Conectar();
-                cmd = new SqlCommand("USP_T_USUARIO_LISTAR", conexion);
-                cmd.CommandType = CommandType.StoredProcedure;
-                conexion.Open();
-                dr = cmd.ExecuteReader();
-                _lista = new List<DtoUsuario>();
-                while (dr.Read())
-                {
-                    _entidad = new DtoUsuario();
-                    _entidad.IDUSUARIO = Convert.ToInt32(dr["IDUSUARIO"]);
-                    _entidad.IDROL = Convert.ToInt32(dr["IDROL"]);
-                    _entidad.NUMERODOCUMENTO = Convert.ToString(dr["NUMERODOCUMENTO"]).Trim();
-                    _entidad.NOMBRE = Convert.ToString(dr["NOMBRE"]);
-                    _entidad.APELLIDOPATERNO = Convert.ToString(dr["APELLIDOPATERNO"]);
-                    _entidad.APELLIDOMATERNO = Convert.ToString(dr["APELLIDOMATERNO"]);
-                    _entidad.CORREO = Convert.ToString(dr["CORREO"]);
-                    _entidad.SEXO = Convert.ToString(dr["SEXO"]);
-                    _entidad.FECHANACIMIENTO = Convert.ToString(dr["FECHANACIMIENTO"]);
-                    _entidad.LOGIN = Convert.ToString(dr["LOGIN"]);
-                    _entidad.ESTADO = Convert.ToBoolean(dr["ESTADO"]);
-                    _lista.Add(_entidad);
-                }
+                var parametros = new DynamicParameters();
+                //parametros.Add("IdEspecialdiad", 1, DbType.String, ParameterDirection.Input);
+                var response = conexion.Query<DtoUsuario>("USP_T_USUARIO_LISTAR", parametros, commandType: CommandType.StoredProcedure);
+                if (response.Count() > 0)
+                    resultado.Lista = (List<DtoUsuario>)response;
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                resultado.UltimoId = 0;
+                resultado.HuboError = true;
+                resultado.Mensaje = ex.ToString();
             }
             finally
             {
-                cmd.Connection.Close();
+                conexion.Close();
             }
-
-            return _lista;
+            return resultado;
         }
+
+
         public ClaseResultado<DtoUsuario> Usuario_Insertar_Actualizar(DtoUsuario _entidad)
         {
             int success = 0;

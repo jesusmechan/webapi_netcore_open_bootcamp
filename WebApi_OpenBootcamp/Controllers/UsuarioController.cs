@@ -19,13 +19,29 @@ namespace WebApi_OpenBootcamp.Controllers
             resultado = new ClaseResultado<DtoUsuario>();
         }
 
+        //[HttpGet]
+        //public List<DtoUsuario> Listar_Usuario()
+        //{
+        //    List<DtoUsuario> _lista = new List<DtoUsuario>();
+        //    _lista = ctr.Usuario_Listar();
+        //    return _lista;
+        //}
+
         [HttpGet]
-        public List<DtoUsuario> Listar_Usuario()
+        public ClaseResultado<DtoUsuario> Listar_Usuario()
         {
-            List<DtoUsuario> _lista = new List<DtoUsuario>();
-            _lista = ctr.Usuario_Listar();
-            return _lista;
+            try
+            {
+                resultado = ctr.Usuario_Listar();
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            return resultado;
         }
+
+
 
 
         [HttpPost]

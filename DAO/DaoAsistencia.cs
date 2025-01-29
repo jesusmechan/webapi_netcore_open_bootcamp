@@ -42,6 +42,7 @@ namespace DAO
                 }
                 else
                 {
+                    resultado.UltimoId = Convert.ToInt32(cmd.Parameters["@P_CODIGO"].Value);
                     resultado.Mensaje = cmd.Parameters["@P_MENSAJE"].Value.ToString();
                     resultado.HuboError = true;
                 }
